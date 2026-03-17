@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@400;500&family=Caveat:wght@500&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:#fdf0f0;min-height:100vh;overflow-x:hidden;}
+.petal{position:fixed;border-radius:50% 0 50% 0;opacity:0.5;animation:fall linear infinite;pointer-events:none;background:#e8a0a0;}
+@keyframes fall{0%{transform:translateY(-30px) rotate(0deg);opacity:0.6;}100%{transform:translateY(110vh) rotate(360deg);opacity:0;}}
+.screen{display:none;min-height:100vh;align-items:center;justify-content:center;padding:40px 20px;flex-direction:column;}
+.screen.active{display:flex;animation:fadeIn 0.5s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.card{background:#f9d7d7;border-radius:24px;padding:48px 40px;max-width:680px;width:100%;text-align:center;position:relative;}
+.bear-img{width:120px;height:120px;border-radius:16px;background:white;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:60px;}
+h1{font-family:'Playfair Display',serif;font-size:30px;color:#3d1515;margin-bottom:14px;line-height:1.3;}
+p.sub{font-size:15px;color:#7a4040;line-height:1.7;max-width:440px;margin:0 auto 32px;}
+.btn-yes{background:#e03030;color:white;border:none;border-radius:40px;padding:14px 40px;font-size:14px;font-weight:600;letter-spacing:1.5px;cursor:pointer;transition:all 0.35s ease;display:block;margin:0 auto;}
+.btn-no{background:#3333cc;color:white;border:none;border-radius:40px;padding:10px 28px;font-size:13px;font-weight:600;letter-spacing:1.2px;cursor:pointer;transition:all 0.35s ease;display:block;margin:12px auto 0;}
+.btn-red{background:#e03030;color:white;border:none;border-radius:40px;padding:14px 48px;font-size:14px;font-weight:600;letter-spacing:1.5px;cursor:pointer;transition:transform 0.1s;margin-top:8px;}
+.btn-red:hover{transform:scale(1.03);}
+.back-btn{background:#e03030;color:white;border:none;border-radius:40px;padding:12px 28px;font-size:13px;font-weight:600;letter-spacing:1.2px;cursor:pointer;}
+.quiz-box{background:white;border-radius:16px;padding:28px;margin-bottom:20px;text-align:left;}
+.quiz-q{font-size:15px;color:#3d1515;font-weight:500;margin-bottom:16px;text-align:center;line-height:1.5;}
+.quiz-opt{background:white;border:1.5px solid #f0c0c0;border-radius:12px;padding:13px 20px;margin:8px 0;font-size:14px;color:#3d1515;cursor:pointer;transition:all 0.2s;text-align:center;width:100%;}
+.quiz-opt:hover{background:#fce8e8;}
+.quiz-opt.correct{background:#e03030;color:white;border-color:#e03030;}
+.quiz-opt.wrong{background:#fce8e8;border-color:#e8a0a0;}
+.quiz-hint{font-size:13px;color:#c04040;font-style:italic;margin-top:10px;text-align:center;display:none;line-height:1.5;}
+.progress-dots{display:flex;gap:8px;justify-content:center;margin-bottom:20px;}
+.dot{width:8px;height:8px;border-radius:50%;background:#e0a0a0;}
+.dot.done{background:#e03030;}
+h2.section-title{font-family:'Playfair Display',serif;font-size:26px;color:#3d1515;margin-bottom:24px;}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
+.photo-frame{background:#fdfbf0;border-radius:12px;padding:8px 8px 18px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+.photo-frame img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;}
+.photo-caption{font-family:'Caveat',cursive;font-size:14px;color:#7a4040;margin-top:6px;}
+.photo-locked{background:#f0c8c8;border-radius:12px;padding:8px 8px 18px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:120px;}
+.lock-icon{font-size:26px;margin-bottom:6px;}
+.photo-locked .photo-caption{font-family:'Caveat',cursive;font-size:12px;color:#a06060;}
+.gifts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+.gift-card{background:#f0c8c8;border-radius:16px;padding:22px 10px;cursor:pointer;transition:all 0.2s;text-align:center;}
+.gift-card:hover,.gift-card.active{background:white;transform:translateY(-4px);box-shadow:0 6px 20px rgba(0,0,0,0.1);}
+.gift-icon{font-size:42px;margin-bottom:10px;}
+.gift-name{font-family:'Playfair Display',serif;font-size:14px;color:#3d1515;}
+.gift-reveal{background:white;border-radius:16px;padding:22px;margin-top:14px;display:none;animation:fadeIn 0.4s ease;font-size:14px;color:#3d1515;line-height:1.7;text-align:left;}
+.gift-reveal.show{display:block;}
+.gift-reveal h3{font-family:'Playfair Display',serif;font-size:17px;margin-bottom:8px;}
+.letter-paper{background:#fdfbf0;border-radius:12px;padding:28px;text-align:left;font-family:'Caveat',cursive;font-size:17px;color:#3d1515;line-height:1.8;margin-bottom:24px;border:1px solid #e8e0c0;}
+.nav-row{display:flex;gap:12px;justify-content:center;margin-top:4px;flex-wrap:wrap;}
+@media(max-width:480px){.card{padding:28px 16px;}h1{font-size:22px;}.photo-grid,.gifts-grid{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+
+<script>
+for(let i=0;i<18;i++){
+  const p=document.createElement('div');
+  p.className='petal';
+  p.style.left=Math.random()*100+'vw';
+  p.style.top=Math.random()*-100+'vh';
+  p.style.animationDuration=(4+Math.random()*6)+'s';
+  p.style.animationDelay=(Math.random()*5)+'s';
+  const s=(6+Math.random()*8)+'px';
+  p.style.width=s;p.style.height=s;
+  document.body.appendChild(p);
+}
+</script>
+
+<!-- S1: Main ask -->
+<div class="screen active" id="s1">
+  <div class="card" id="s1card">
+    <div class="bear-img">🐻</div>
+    <h1>Hey Neha 🥺</h1>
+    <p class="sub">On this completely random, totally ordinary day — will you accept a small something from someone who thinks you're kind of wonderful?</p>
+    <button class="btn-yes" id="yesBtn" onclick="go('s2')">YES 🥰</button>
+    <button class="btn-no" id="noBtn" onclick="shrinkNo()">NO</button>
+  </div>
+</div>
+
+<!-- S2: Are you sure -->
+<div class="screen" id="s2">
+  <div class="card">
+    <div class="bear-img">😤</div>
+    <h1>Are you sure? 😠</h1>
+    <p class="sub">This bear is personally offended. There is only one button now.</p>
+    <button class="btn-yes" style="padding:16px 80px;font-size:16px;" onclick="go('s3')">YES 🎉</button>
+  </div>
+</div>
+
+<!-- S3: Welcome -->
+<div class="screen" id="s3">
+  <div class="card">
+    <div class="bear-img">🤍</div>
+    <h1>Hey, you 🌸</h1>
+    <p class="sub">This is a small corner of the internet made entirely for you. A manhater, a hard worker, a very bright person — and somehow also someone who accepted a LinkedIn request from a guy she hadn't spoken to in two years. Good call.</p>
+    <button class="btn-red" onclick="go('s4')">SEE WHAT'S INSIDE →</button>
+  </div>
+</div>
+
+<!-- S4: Quiz -->
+<div class="screen" id="s4">
+  <div class="card">
+    <h2 class="section-title">A little quiz for you 😙</h2>
+    <div class="progress-dots" id="quizDots"></div>
+    <div class="quiz-box">
+      <div class="quiz-q" id="quizQ"></div>
+      <div id="quizOpts"></div>
+      <div class="quiz-hint" id="quizHint"></div>
+    </div>
+    <div class="nav-row">
+      <button class="back-btn" onclick="go('s3')">← BACK</button>
+    </div>
+  </div>
+</div>
+
+<!-- S5: Gallery -->
+<div class="screen" id="s5">
+  <div class="card">
+    <h2 class="section-title">Chapter 1 📸</h2>
+    <p class="sub" style="margin-bottom:20px;">One chapter written so far — and it couldn't have started better. (Even if it started with a LinkedIn request 😭)</p>
+    <div class="photo-grid">
+      <div class="photo-frame" id="mainPhoto">
+        <div style="width:100%;aspect-ratio:4/3;background:#f0c0c0;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:36px;">🌸</div>
+        <div class="photo-caption">Our first meeting ✨</div>
+      </div>
+      <div class="photo-locked"><div class="lock-icon">🔒</div><div class="photo-caption">Meet more to unlock</div></div>
+      <div class="photo-locked"><div class="lock-icon">🔒</div><div class="photo-caption">Meet more to unlock</div></div>
+      <div class="photo-locked"><div class="lock-icon">🔒</div><div class="photo-caption">Meet more to unlock</div></div>
+      <div class="photo-locked"><div class="lock-icon">🔒</div><div class="photo-caption">Meet more to unlock</div></div>
+      <div class="photo-locked"><div class="lock-icon">🔒</div><div class="photo-caption">Meet more to unlock</div></div>
+    </div>
+    <div class="nav-row">
+      <button class="back-btn" onclick="go('s4')">← BACK</button>
+      <button class="btn-red" onclick="go('s6')">NEXT →</button>
+    </div>
+  </div>
+</div>
+
+<!-- S6: Admiration cards -->
+<div class="screen" id="s6">
+  <div class="card">
+    <h2 class="section-title">Things I genuinely admire about you 🌷</h2>
+    <div class="gifts-grid">
+      <div class="gift-card" onclick="showGift(1,this)"><div class="gift-icon">⚡</div><div class="gift-name">Your resilience</div></div>
+      <div class="gift-card" onclick="showGift(2,this)"><div class="gift-icon">🧠</div><div class="gift-name">Your mind</div></div>
+      <div class="gift-card" onclick="showGift(3,this)"><div class="gift-icon">🌟</div><div class="gift-name">Your warmth</div></div>
+    </div>
+    <div class="gift-reveal" id="gift1"><h3>Your resilience ⚡</h3>A two-year gap, a misunderstanding, life going in different directions — and yet here you are, still you. Still sharp, still responsible, still showing up. That kind of quiet strength doesn't come easy.</div>
+    <div class="gift-reveal" id="gift2"><h3>Your mind 🧠</h3>You think things through. You're bright in the truest sense — not just intelligent, but perceptive and careful. Conversations with you have that rare quality of actually meaning something.</div>
+    <div class="gift-reveal" id="gift3"><h3>Your warmth 🌟</h3>For someone who claims to be a manhater, you're remarkably kind. You care about things. You're real. And that realness — even the "I don't like people" energy — is honestly one of the best things about you.</div>
+    <div class="nav-row" style="margin-top:16px;">
+      <button class="back-btn" onclick="go('s5')">← BACK</button>
+      <button class="btn-red" onclick="go('s7')">FINALLY... ✨</button>
+    </div>
+  </div>
+</div>
+
+<!-- S7: Letter -->
+<div class="screen" id="s7">
+  <div class="card">
+    <h2 class="section-title">A letter for you 🥺</h2>
+    <div class="letter-paper">
+      <p>Dear Neha,</p><br>
+      <p>I don't really know how to say this without it sounding like a big deal — so I'll just say it simply.</p><br>
+      <p>Two years is a long time. And yet, January 2026 came around and it somehow felt like no time had passed at all. I think that says something — about you, about the kind of person you are. People like you don't just fade into the background of someone's life. You stay.</p><br>
+      <p>You're one of the most responsible, resilient people I know. You carry things quietly. You push through. You take life seriously — and somehow still manage to be funny about it. (The manhater arc is genuinely one of your best qualities.)</p><br>
+      <p>I'm not here to make anything complicated. I just think you deserve to hear, on a random day, that you are genuinely wonderful. And I'm really glad a LinkedIn request brought us back.</p><br>
+      <p>No pressure on anything. Just — I'm glad you exist.</p><br>
+      <p>Warmly,<br><strong>Satwik 🤍</strong></p>
+    </div>
+    <div class="nav-row">
+      <button class="back-btn" onclick="go('s6')">← BACK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// NO button shrink logic
+let noClicks = 0;
+let yesSize = 14;
+let noSize = 13;
+let yesPad = 14;
+const maxClicks = 6;
+
+function shrinkNo() {
+  noClicks++;
+  const yesBtn = document.getElementById('yesBtn');
+  const noBtn = document.getElementById('noBtn');
+
+  if (noClicks >= maxClicks) {
+    noBtn.style.display = 'none';
+    yesBtn.style.fontSize = '22px';
+    yesBtn.style.padding = '22px 0';
+    yesBtn.style.width = '100%';
+    yesBtn.style.borderRadius = '16px';
+    return;
+  }
+
+  const ratio = noClicks / maxClicks;
+  // shrink no
+  const newNoSize = Math.max(9, 13 - noClicks * 1.2);
+  const newNoPad = Math.max(4, 10 - noClicks * 1.2);
+  noBtn.style.fontSize = newNoSize + 'px';
+  noBtn.style.padding = newNoPad + 'px ' + (newNoPad * 2.5) + 'px';
+  noBtn.style.opacity = Math.max(0.3, 1 - ratio * 0.7);
+
+  // grow yes
+  const newYesSize = 14 + noClicks * 3;
+  const newYesPad = 14 + noClicks * 4;
+  const newYesWidth = 60 + noClicks * 6;
+  yesBtn.style.fontSize = newYesSize + 'px';
+  yesBtn.style.padding = newYesPad + 'px ' + (newYesPad * 2) + 'px';
+  yesBtn.style.width = Math.min(newYesWidth, 100) + '%';
+  if (newYesWidth >= 100) yesBtn.style.borderRadius = '16px';
+}
+
+// Quiz data
+const quizzes = [
+  {
+    q: "Who is the absolute best person you know? 🥹",
+    opts: ["My dog", "My best friend", "Definitely not Satwik", "Me, obviously (correct answer 😌)"],
+    correct: 3,
+    hint: "Oh, don't you think I'm cute? 🥺"
+  },
+  {
+    q: "What makes Neha, Neha? 💫",
+    opts: ["Her resilience", "Her bright mind", "Her (secretly) warm heart", "All of the above"],
+    correct: 3,
+    hint: "In my eyes, it's everything. 🌸"
+  },
+  {
+    q: "Where is the best place to be right now? 🌷",
+    opts: ["At a beach", "In bed sleeping", "Sitting right here", "Literally anywhere else"],
+    correct: 2,
+    hint: "You are the first person I saw like that. 🥺"
+  },
+  {
+    q: "What are Neha's best qualities? ✨",
+    opts: ["Her resilience", "Her intelligence", "Her quiet warmth", "All of the above"],
+    correct: 3,
+    hint: "Can you stop lying for once in your life? 😭"
+  }
+];
+
+let qIdx = 0;
+let answered = false;
+
+function renderQuiz() {
+  answered = false;
+  const q = quizzes[qIdx];
+  document.getElementById('quizQ').textContent = q.q;
+  document.getElementById('quizHint').style.display = 'none';
+  document.getElementById('quizHint').textContent = '';
+  const opts = document.getElementById('quizOpts');
+  opts.innerHTML = '';
+  q.opts.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt';
+    btn.textContent = o;
+    btn.onclick = () => pickOpt(i, btn);
+    opts.appendChild(btn);
+  });
+  const dots = document.getElementById('quizDots');
+  dots.innerHTML = '';
+  quizzes.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i < qIdx ? ' done' : '');
+    dots.appendChild(d);
+  });
+}
+
+function pickOpt(i, btn) {
+  if (answered) return;
+  const q = quizzes[qIdx];
+  const allBtns = document.querySelectorAll('.quiz-opt');
+  if (i === q.correct) {
+    answered = true;
+    btn.classList.add('correct');
+    setTimeout(() => {
+      if (qIdx < quizzes.length - 1) { qIdx++; renderQuiz(); }
+      else { go('s5'); }
+    }, 700);
+  } else {
+    allBtns.forEach(b => b.classList.add('wrong'));
+    btn.style.background = '#f9b0b0';
+    btn.style.borderColor = '#e85050';
+    const hint = document.getElementById('quizHint');
+    hint.textContent = q.hint;
+    hint.style.display = 'block';
+    setTimeout(() => {
+      allBtns.forEach(b => { b.classList.remove('wrong'); b.style.background=''; b.style.borderColor=''; });
+      hint.style.display = 'none';
+    }, 2000);
+  }
+}
+
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if (id === 's4') renderQuiz();
+}
+
+function showGift(n, el) {
+  document.querySelectorAll('.gift-card').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.gift-reveal').forEach(r => r.classList.remove('show'));
+  el.classList.add('active');
+  document.getElementById('gift' + n).classList.add('show');
+}
+
+// Photo injection from parent (for when you share the JPG)
+window.setPhoto = function(src) {
+  const frame = document.getElementById('mainPhoto');
+  frame.innerHTML = '<img src="' + src + '" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;"><div class="photo-caption">Our first meeting ✨</div>';
+}
+</script>
+</body>
+</html>
